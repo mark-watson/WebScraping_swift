@@ -1,25 +1,35 @@
 import XCTest
 import Foundation
-import SwiftSoup
-
 @testable import WebScraping_swift
 
 final class WebScrapingTests: XCTestCase {
-    func testGetWebPage() {
-        let text = webPageText(uri: "https://markwatson.com")
-        print("\n\n\tTEXT FROM MARK's WEB SITE:\n\n", text)
+    let testURL = "https://markwatson.com"
+
+    func testWebPageText() async throws {
+        let text = try await webPageText(uri: testURL)
+        XCTAssertFalse(text.isEmpty, "Text from Mark's site should not be empty.")
     }
 
-    func testToShowSwiftSoupExamples() {
-        let myURLString = "https://markwatson.com"
-        let h1_headers = webPageH1Headers(uri: myURLString)
-        print("\n\n++ h1_headers:", h1_headers)
-        let h2_headers = webPageH2Headers(uri: myURLString)
-        print("\n\n++ h2_headers:", h2_headers)
-        let anchors = webPageAnchors(uri: myURLString)
-        print("\n\n++ anchors:", anchors)
-}
+    func testWebPageH1Headers() async throws {
+        let h1Headers = try await webPageH1Headers(uri: testURL)
+        XCTAssertFalse(h1Headers.isEmpty, "H1 headers should not be empty.")
+        print("++ h1_headers:", h1Headers)
+    }
 
-    static var allTests = [("testGetWebPage", testGetWebPage),
-                           ("testToShowSwiftSoupExamples", testToShowSwiftSoupExamples)]
+    func testWebPageH2Headers() async throws {
+        let h2Headers = try await webPageH2Headers(uri: testURL)
+        XCTAssertFalse(h2Headers.isEmpty, "H2 headers should not be empty.")
+        print("++ h2_headers:", h2Headers)
+    }
+
+    func testWebPageAnchors() async throws {
+        let anchors = try await webPageAnchors(uri: testURL)
+        XCTAssertFalse(anchors.isEmpty, "Anchors should not be empty.")
+        
+        // Ensure URLs are fully qualified
+        for anchor in anchors {
+            XCTAssertNotNil(anchor.url.scheme, "Anchor URL should have a scheme: \(anchor.url)")
+            XCTAssertNotNil(anchor.url.host, "Anchor URL should have a host: \(anchor.url)")
+        }
+    }
 }
